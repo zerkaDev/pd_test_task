@@ -1,25 +1,14 @@
 import json
 import requests
 
-from api_worker.validator import get_sorted_and_validated_todos, get_sorted_and_validated_users
+from api_worker.validator import get_sorted_and_validated_todos,\
+    get_sorted_and_validated_users
 
 from settings import TODOS_API_PATH, USERS_API_PATH
 
 from view_models.user import User
 
 
-def connection_error_decorator(request_sender_func):
-    def wrapper():
-        try:
-            return request_sender_func()
-        except ConnectionError:
-            print('Отсутствует подключение к интернету')
-            return
-
-    return wrapper
-
-
-@connection_error_decorator
 def get_users_from_json():
     api_response = requests.get(USERS_API_PATH)
     users = json.loads(api_response.text)
@@ -27,7 +16,6 @@ def get_users_from_json():
     return get_sorted_and_validated_users(users)
 
 
-@connection_error_decorator
 def get_todos_from_json():
     api_response = requests.get(TODOS_API_PATH)
     todos = json.loads(api_response.text)
@@ -44,6 +32,10 @@ def get_user_vm(user, all_todos):
         all_todos)
 
 
+def get_first_or_next_user(users, todos, i=0):
+    return next(usr for usr in users if usr['id'] == todos[i]['userId'])
+
+
 # Почему такой подход? Мне кажется, что пройтись 1 раз по всем
 # задачам и искать юзера только при смене userId быстрее, чем
 # подтягивать задачи отталкиваясь от юзера. В случае подтягивания
@@ -56,7 +48,8 @@ def get_users_vm_from_json(users, todos):
     users_vm = []
     all_todos = []
 
-    user = next(usr for usr in users if usr['id'] == todos[0]['userId'])
+    # Может вылететь indexOutOfArray
+    user = get_first_or_next_user(users, todos)
 
     for i in range(0, len(todos)):
         all_todos.append(todos[i])
@@ -67,7 +60,7 @@ def get_users_vm_from_json(users, todos):
 
         if todos[i]['userId'] != todos[i + 1]['userId']:
             users_vm.append(get_user_vm(user, all_todos))
-            user = next(item for item in users if item['id'] == todos[i + 1]['userId'])
+            user = get_first_or_next_user(users, todos, i+1)
             all_todos = []
 
     return users_vm

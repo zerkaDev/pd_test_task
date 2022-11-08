@@ -1,9 +1,23 @@
 def check_title(todo_dict):
+    if todo_dict['title'] == "":
+        return False
+
     if len(todo_dict['title']) > 46:
         todo_dict['title'] = todo_dict['title'][0:46] + '…'
 
+    return True
 
-def ensure_user_have_relation_and_required_variables(user):
+
+def check_user(user_dict):
+    if user_dict['name'] == "" or \
+            user_dict['username'] == "" or \
+            user_dict['email'] == "" or \
+            user_dict['companyName'] == "":
+        return False
+    return True
+
+
+def ensure_user_have_required_variables(user):
     try:
         user_dict = {
             'id': user['id'],
@@ -13,6 +27,9 @@ def ensure_user_have_relation_and_required_variables(user):
             'companyName': user['company']['name'],
         }
     except KeyError:
+        return None, False
+
+    if not check_user(user_dict):
         return None, False
 
     return user_dict, True
@@ -28,7 +45,8 @@ def ensure_todo_have_relation_and_required_variables(todo):
     except KeyError:
         return None, False
 
-    check_title(todo_dict)
+    if not check_title(todo_dict):
+        return None, False
 
     return todo_dict, True
 
@@ -48,7 +66,7 @@ def get_sorted_and_validated_users(users: list[dict]):
     sorted_users = []
 
     for user in users:
-        val_user, is_created = ensure_user_have_relation_and_required_variables(user)
+        val_user, is_created = ensure_user_have_required_variables(user)
         if is_created:
             sorted_users.append(val_user)
 
