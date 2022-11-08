@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 from sys import platform
 
-from ReportMaker.report import get_full_report
+from report_maker.report import get_full_report
 from settings import CURRENT_DIR
 
 TASKS_DIR_PATH = path = os.path.join(CURRENT_DIR, 'tasks')
