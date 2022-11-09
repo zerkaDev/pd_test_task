@@ -48,10 +48,10 @@ def create_non_valid_users_json(count):
     return users
 
 
-def create_valid_user_json(id):
+def create_valid_user_json(id, name='name', username='usname'):
     val = '{ "id": ' + str(id) + \
-          ', "name": "name", ' \
-          '"username": "usnm", ' \
+          ', "name": "' + str(name) + '", ' \
+          '"username": "' + str(username) + '", ' \
           '"email": "a@a.ru", ' \
           '"company": { "name": "cmp name" } }'
     return json.loads(val)

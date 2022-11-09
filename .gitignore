@@ -9,6 +9,7 @@ __pycache__/
 
 # This project folder
 tasks
+
 # C extensions
 *.so
 
