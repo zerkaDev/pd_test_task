@@ -56,3 +56,17 @@ def test_vm_one_user_without_relationship():
     # assert
     assert users_vm is not None
     assert len(users_vm) == 2
+
+
+def test_vm_zero_users_raises_except():
+    valid_todos = create_valid_todos_json(100, 1)
+
+    todos = get_sorted_and_validated_todos(valid_todos)
+    users = get_sorted_and_validated_users([{}])
+
+    try:
+        _ = get_users_vm_from_json(
+            users=users, todos=todos)
+        assert False
+    except StopIteration:
+        assert True

@@ -33,7 +33,11 @@ def get_user_vm(user, all_todos):
 
 
 def get_first_or_next_user(users, todos, i=0):
-    return next(usr for usr in users if usr['id'] == todos[i]['userId'])
+    try:
+        return next(usr for usr in users if usr['id'] == todos[i]['userId'])
+    except StopIteration as e:
+        print('Юзеров нет, программа останавливает свое выполнение')
+        raise e
 
 
 # Почему такой подход? Мне кажется, что пройтись 1 раз по всем
